@@ -1,9 +1,22 @@
 
+<html>
 <head>
     <script async src="/browser-sync/browser-sync-client.js"></script>
 </head>
 
-<h1>Got my browser sync hot reload to work with nginx</h1>
+<body>
+    <h1>Broswer-sync hot-reload container + Node.js backend container + Redis server containter</h1>
+    <p id="visits">Loading.....</p>
+    <script>
+        fetch('http://localhost:4000/visits')
+            .then(res => res.text())
+            .then(data => {
+                console.log('data', data)
+                document.getElementById("visits").innerText = data;
+            })
+    </script>
+</body>
+</html>
 
 
 

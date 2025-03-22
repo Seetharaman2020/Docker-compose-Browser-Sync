@@ -1,17 +1,3 @@
-# Use an existing docker image, set it's port and mount a local file to be served by nginx
-
-
-# Basic docker compose to create a web app using nginx image
-# version: '3'
-# services:
-#   web:
-#     image: nginx
-#     ports:
-#       - "8080:80"
-#     volumes:
-#       - ./html:/usr/share/nginx/html
-
-
 # Broswer sync hot reload for static files work with the below docker command 
 # we are downloading browser-sync and make it listen to port 3000 and in the html file we can list out the <head> to point to the browser sync
 # docker run --rm -it -p 3000:3000 -v "${PWD}/html:/site" -w /site node bash -c "npm install -g browser-sync && browser-sync start --server --files '*.html'"
@@ -34,4 +20,20 @@ services:
              browser-sync start --server --files '*.html' --no-open --inject-changes"
 
 
- 
+# let's create multiple containers and see how we can interact all of them
+# so the following create a node.js backend and a redis server to save data in the form of a dictionary
+  backend:
+    build: ./backend             # this is different from the other 2 services - here we are not invoking a image but a dockerfile to hook up the containers
+    container_name: node-backend # custom name
+    working_dir: /app
+    ports:
+      - "4000:4000"
+    depends_on:
+      - redis                    # connecting with redis (interaction between 2 containers)
+    # volumes:
+    #   - ./backend:/app        # this causes an issue - wherein it says Express is missing - so the problem was - on step build - we install dependencies and the node_modules is created
+                                # but with the volume mount - it gets overridden and hence we lose the node_modules
+
+  redis:
+    image: redis:alpine
+    container_name: redis-db
